@@ -117,8 +117,16 @@ namespace KayosStudios.AsteroidQuest.ManagerClasses
                 //If a valid position is found add it to the list and instantiate the orb
                 if (validPosition)
                 {
+                    //Add orb position to list of positions
                     orbPositions.Add(orbPosition);
-                    Instantiate(orbPrefab, orbPosition, Quaternion.LookRotation(orbPosition.normalized));
+
+                    //Instantiate the orb
+                    GameObject orb = Instantiate(orbPrefab, orbPosition, Quaternion.LookRotation(orbPosition.normalized));
+
+                    //Set the parent of the orb to the asteroidInstance without altering the orb scale
+                    orb.transform.SetParent(asteroidInstance.transform, worldPositionStays: true);
+
+
                     Debug.Log($"Orb {currentOrbCount}/numOrbs position = {orbPosition}");
                 }
                 else
