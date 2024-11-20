@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using KayosStudios.AsteroidQuest.GameManagement;
+using KayosStudios.AsteroidQuest.DataManagement;
+using KayosStudios.AsteroidQuest.OrbManagement;
 
 namespace KayosStudios.AsteroidQuest.AsteroidManagement
 {
@@ -24,15 +26,8 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         [SerializeField] GameObject orbPrefab;
 
         [Header("Orb Spawn Settings")]
-        [Tooltip("")]
-        [SerializeField] int orbSeed = 0;
-        [Tooltip("Minimum number of orbs allowed to spawn")]
-        [SerializeField] int minOrb;
-        [Tooltip("Maximum number of orbs allowed to spawn")]
-        [SerializeField] int maxOrb;
         [Tooltip("Float to control the distance between orbs")]
         [SerializeField] float orbSpacing;
-
         [Tooltip("List to store references to all created orbs")]
         [SerializeField] List<GameObject> orbsList = new();
         [Tooltip("List to store orb positions")]
@@ -42,38 +37,12 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         [Header("Asteroid Settings")]
         [Tooltip("Radius of the asteroidPrefab to ensure the orbs are correctly placed on the surface")]
         [SerializeField] float asteroidRadius;
-        [Tooltip("Minimum scale for the asteroid")]
-        [SerializeField] float minScale = 5f;
-        [Tooltip("Maximum scale for the asteroid")]
-        [SerializeField] float maxScale = 15f;
+
 
         private GameObject asteroidInstance;
         private AsteroidRotation asteroidRotate;
 
         public int TotalOrbsSpawned { get; private set; }
-
-        private void OnEnable()
-        {
-            EventManager.Instance.OnObjectiveCompleted += HandleObjectiveCompletion;
-        }
-
-        private void OnDisable()
-        {
-            EventManager.Instance.OnObjectiveCompleted -= HandleObjectiveCompletion;
-        }
-
-        private void HandleObjectiveCompletion(ObjectiveTypes completedObj)
-        {
-            switch (completedObj)
-            {
-                case ObjectiveTypes.OrbSelection:
-                    AsteroidRotation(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-
         private void Awake()
         {
             if (Instance == null)
@@ -81,7 +50,6 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             else
                 Destroy(gameObject);   
         }
-
         private void Start()
         {
             //Instantiate the asteroid at a random scale
@@ -89,7 +57,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             asteroidRotate = asteroidInstance.GetComponent<AsteroidRotation>();
 
             //Set random scale for the asteroid
-            float randomScale = Random.Range(minScale, maxScale);
+            float randomScale = Random.Range(DataController.Instance.MinScale, DataController.Instance.MaxScale);
             asteroidInstance.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
 
             //Recalculate asteroidRadius based on the new scale
@@ -98,24 +66,23 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             //Spawn the orbs
             OrbsToSpawn();
         }
-
+        private void OnEnable()
+        {
+            EventManager.Instance.OnObjectiveCompleted += HandleObjectiveCompletion;
+        }
+        private void OnDisable()
+        {
+            EventManager.Instance.OnObjectiveCompleted -= HandleObjectiveCompletion;
+        }
         private void OrbsToSpawn()
         {
-            if(orbSeed == 0)
-            {
-                orbSeed = System.DateTime.Now.Millisecond;
-                Debug.Log($"Current Orb Seed = {orbSeed}");
-            }
-
-            // Initialize the random number generator with the seed
-            Random.InitState(orbSeed);
-            TotalOrbsSpawned = Random.Range(minOrb, maxOrb);
+            TotalOrbsSpawned = DataController.Instance.CalculateOrbCount();
             
 
-            for (int currentOrbCount = 0; currentOrbCount != TotalOrbsSpawned; currentOrbCount++)
+            for (int currentOrbCount = 0; currentOrbCount < TotalOrbsSpawned; currentOrbCount++)
             {
                 Vector3 orbPosition;
-                bool validPosition = false;
+                bool validPosition;
                 int attempts = 0;
                 const int maxAttempts = 100; //Limit to prevent infinite loops
 
@@ -161,6 +128,12 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                     //Set the parent of the orb to the asteroidInstance without altering the orb scale
                     orb.transform.SetParent(asteroidInstance.transform, worldPositionStays: true);
 
+                    //Pass shared cell data to the OrbSelector
+                    OrbSelector orbSelector = orb.GetComponent<OrbSelector>();
+                    if(orbSelector != null)
+                    {
+                        orbSelector.InitilizeOrb(DataController.Instance.Rows, DataController.Instance.Columns);
+                    }
 
                     Debug.Log($"Orb {currentOrbCount}/{TotalOrbsSpawned} position = {orbPosition}");
                 }
@@ -170,6 +143,23 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 }
             }
         }
+
+
+
+        private void HandleObjectiveCompletion(ObjectiveTypes completedObj)
+        {
+            switch (completedObj)
+            {
+                case ObjectiveTypes.OrbSelection:
+                    AsteroidRotation(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+
 
         /// <summary>
         /// Communicates with the Asteroid to enable/disable rotation 
