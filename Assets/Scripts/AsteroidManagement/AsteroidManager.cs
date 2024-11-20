@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using KayosStudios.AsteroidQuest.GameManagement;
 
-namespace KayosStudios.AsteroidQuest.ManagerClasses
+namespace KayosStudios.AsteroidQuest.AsteroidManagement
 {
     /// <summary>
     /// Manages the overall asteroid and the orbs placed on its surface
@@ -13,6 +14,8 @@ namespace KayosStudios.AsteroidQuest.ManagerClasses
     /// </summary>
     public class AsteroidManager : MonoBehaviour
     {
+
+        public static AsteroidManager Instance { get; private set; }
 
         [Header("Prefab References")]
         [Tooltip("Reference to the asteroid GameObject")]
@@ -27,8 +30,6 @@ namespace KayosStudios.AsteroidQuest.ManagerClasses
         [SerializeField] int minOrb;
         [Tooltip("Maximum number of orbs allowed to spawn")]
         [SerializeField] int maxOrb;
-        [Tooltip("Integer to determine how many orbs to generate")]
-        [SerializeField] int numOrbs;
         [Tooltip("Float to control the distance between orbs")]
         [SerializeField] float orbSpacing;
 
@@ -47,12 +48,45 @@ namespace KayosStudios.AsteroidQuest.ManagerClasses
         [SerializeField] float maxScale = 15f;
 
         private GameObject asteroidInstance;
+        private AsteroidRotation asteroidRotate;
 
+        public int TotalOrbsSpawned { get; private set; }
+
+        private void OnEnable()
+        {
+            EventManager.Instance.OnObjectiveCompleted += HandleObjectiveCompletion;
+        }
+
+        private void OnDisable()
+        {
+            EventManager.Instance.OnObjectiveCompleted -= HandleObjectiveCompletion;
+        }
+
+        private void HandleObjectiveCompletion(ObjectiveTypes completedObj)
+        {
+            switch (completedObj)
+            {
+                case ObjectiveTypes.OrbSelection:
+                    AsteroidRotation(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Awake()
+        {
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(gameObject);   
+        }
 
         private void Start()
         {
-            //Instantiate the aseroid at a random scale
+            //Instantiate the asteroid at a random scale
             asteroidInstance = Instantiate(asteroidPrefab, Vector3.zero, Quaternion.identity);
+            asteroidRotate = asteroidInstance.GetComponent<AsteroidRotation>();
 
             //Set random scale for the asteroid
             float randomScale = Random.Range(minScale, maxScale);
@@ -75,10 +109,10 @@ namespace KayosStudios.AsteroidQuest.ManagerClasses
 
             // Initialize the random number generator with the seed
             Random.InitState(orbSeed);
-            numOrbs = Random.Range(minOrb, maxOrb);
+            TotalOrbsSpawned = Random.Range(minOrb, maxOrb);
             
 
-            for (int currentOrbCount = 0; currentOrbCount != numOrbs; currentOrbCount++)
+            for (int currentOrbCount = 0; currentOrbCount != TotalOrbsSpawned; currentOrbCount++)
             {
                 Vector3 orbPosition;
                 bool validPosition = false;
@@ -123,16 +157,33 @@ namespace KayosStudios.AsteroidQuest.ManagerClasses
                     //Instantiate the orb
                     GameObject orb = Instantiate(orbPrefab, orbPosition, Quaternion.LookRotation(orbPosition.normalized));
 
+                    orbsList.Add(orb);
                     //Set the parent of the orb to the asteroidInstance without altering the orb scale
                     orb.transform.SetParent(asteroidInstance.transform, worldPositionStays: true);
 
 
-                    Debug.Log($"Orb {currentOrbCount}/numOrbs position = {orbPosition}");
+                    Debug.Log($"Orb {currentOrbCount}/{TotalOrbsSpawned} position = {orbPosition}");
                 }
                 else
                 {
                     Debug.LogWarning($"failed to find a valid position for orb {currentOrbCount} after {maxAttempts} attempts");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Communicates with the Asteroid to enable/disable rotation 
+        /// </summary>
+        /// <param name="enable"></param>
+        public void AsteroidRotation(bool enable)
+        {
+            if (enable)
+            {
+                asteroidRotate.EnableRotation();
+            }
+            else
+            {
+                asteroidRotate.DisableRotation();
             }
         }
     }
