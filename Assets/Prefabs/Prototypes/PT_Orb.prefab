@@ -122,3 +122,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 8919086382085477712, guid: fce3ba9796c52dd4c83f3584e0920ff2,
     type: 3}
+  orbRadius: 0.5

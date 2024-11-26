@@ -6,9 +6,11 @@ namespace KayosStudios.AsteroidQuest.OrbManagement
 {
     public class OrbController : MonoBehaviour
     {
-        [SerializeField] private GameObject cellPrefab;
+        [SerializeField] GameObject cellPrefab;
+        [SerializeField] float orbRadius;
 
         private List<CellController> spawnedCells = new List<CellController>();
+        
 
         public void SpawnCells(int cellCount)
         {
@@ -21,8 +23,13 @@ namespace KayosStudios.AsteroidQuest.OrbManagement
                 Vector3 randomPosition = Random.insideUnitSphere * 0.5f;
                 cell.transform.localPosition = randomPosition;
 
-                //Add cell to list for future reference
+                Vector3 randomDirection = Random.onUnitSphere; //Random initial direction
+
+                //Initialize the cell
                 CellController cellController = cell.GetComponent<CellController>();
+                cellController.Initilize(randomDirection, orbRadius);
+
+                //Add cell to list for tracking
                 spawnedCells.Add(cellController);
             }
 
