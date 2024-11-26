@@ -120,6 +120,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 801cb175b3ef74949907bd4eae72e36a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalCells: 0
-  energizedCells: 0
-  isSelected: 0
+  cellPrefab: {fileID: 8919086382085477712, guid: fce3ba9796c52dd4c83f3584e0920ff2,
+    type: 3}

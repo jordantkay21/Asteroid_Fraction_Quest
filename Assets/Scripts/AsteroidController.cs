@@ -75,6 +75,20 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         {
             return _asteroidType;
         }
+        public int GetCellCountByType()
+        {
+            switch (_asteroidType)
+            {
+                case AsteroidType.Red:
+                    return 3;
+                case AsteroidType.Blue:
+                    return 5;
+                case AsteroidType.Green:
+                    return 7;
+                default:
+                    return 3;
+            }
+        }
 
         public void SpawnOrbs()
         {
@@ -112,10 +126,15 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 // Add to list for tracking
                 _spawnedOrbs.Add(orb);
 
-                Debug.Log($"Orb {i} placed after {attempts} attempts at {orbPosition}");
+                //Spawn cells in the orb
+                OrbManagement.OrbController orbController = orb.GetComponent<OrbManagement.OrbController>();
+                int cellCount = GetCellCountByType();
+                orbController.SpawnCells(cellCount);
+
+                Debug.Log($"<color=aqua> Orb {i} </color> placed after {attempts} attempts at {orbPosition}");
             }
 
-            Debug.Log($"Spawned {orbCount} orbs on {name}");
+            Debug.Log($" Spawned <color=aqua>{orbCount} orbs</color> on <color=fuchsia>{name}</color>");
 
         }
 
@@ -136,5 +155,6 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             }
             return true;
         }
+
     }
 }
