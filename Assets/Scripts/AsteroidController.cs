@@ -131,7 +131,11 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 int cellCount = GetCellCountByType();
                 orbController.SpawnCells(cellCount);
 
-                Debug.Log($"<color=aqua> Orb {i} </color> placed after {attempts} attempts at {orbPosition}");
+                //Energize a random subset of cells
+                int energizedCellCount = Mathf.CeilToInt(cellCount / 2f);
+                orbController.EnergizedCells(energizedCellCount);
+
+                Debug.Log($"<color=aqua> Orb {i} </color> placed at {orbPosition} with <color=orange>{cellCount} cells</color> which has <color=yellow>{energizedCellCount} cells energized</color>.");
             }
 
             Debug.Log($" Spawned <color=aqua>{orbCount} orbs</color> on <color=fuchsia>{name}</color>");

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8914123261316749779}
   - component: {fileID: 8856334028421282013}
   - component: {fileID: 1277414149928517827}
+  - component: {fileID: 1115803123465794637}
   m_Layer: 0
   m_Name: PT_Cell
   m_TagString: Untagged
@@ -106,6 +107,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1115803123465794637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8919086382085477712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 231d5363498cf6c46b9e1f3bbd08c63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  energizedIcon: {fileID: 5818441352599934756}
 --- !u!1001 &5817146778789192032
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -120,7 +134,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1664358012696132, guid: 64c85ee59ebf6cb4ba02e44adafcca50, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4324167396643332, guid: 64c85ee59ebf6cb4ba02e44adafcca50, type: 3}
       propertyPath: m_LocalScale.x
@@ -187,6 +201,12 @@ PrefabInstance:
 --- !u!4 &5815823745615000420 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4324167396643332, guid: 64c85ee59ebf6cb4ba02e44adafcca50,
+    type: 3}
+  m_PrefabInstance: {fileID: 5817146778789192032}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5818441352599934756 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1664358012696132, guid: 64c85ee59ebf6cb4ba02e44adafcca50,
     type: 3}
   m_PrefabInstance: {fileID: 5817146778789192032}
   m_PrefabAsset: {fileID: 0}
