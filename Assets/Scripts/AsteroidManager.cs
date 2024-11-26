@@ -93,6 +93,9 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 // Assign a unique name to the asteroid
                 asteroid.name = $"asteroid{i}_{asteroid.GetAsteroidType()}";
 
+                //Spawn random orbs on the asteroid
+                asteroid.SpawnOrbs();
+
                 //Trigger the asteroid spawned event
                 EventManager.Instance.TriggerAsteroidSpawned(asteroid);
 

@@ -120,3 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minScale: 3
   maxScale: 7
+  orbPrefab: {fileID: 5648178062992903432, guid: f1681e9c72a1f9444ae4e2e3be7005a6,
+    type: 3}
+  minOrbs: 3
+  maxOrbs: 8
