@@ -9,13 +9,6 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
     /// </summary>
     public class AsteroidController : MonoBehaviour
     {
-        public enum AsteroidType
-        {
-            Red,
-            Blue,
-            Green
-        }
-
         [Header("Asteroid Properties")]
         public float minScale;
         public float maxScale;
@@ -27,19 +20,21 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         [Tooltip("Minimum distance between orbs")]
         public float minSpacing;
 
-        private List<GameObject> _spawnedOrbs = new List<GameObject>();
+        private List<OrbController> _spawnedOrbs = new List<OrbController>();
         private AsteroidType _asteroidType;
-
-        private void OnMouseEnter()
-        {
-            //Trigger the asteroid hovered event
-            EventManager.Instance.TriggerAsteroidHovered(this);
-        }
 
         private void OnMouseDown()
         {
             //Trigger the asteroid selected event
-            EventManager.Instance.TriggerAsteroidSelected(this);
+
+            AsteroidData selectedAsteroid = new AsteroidData
+            {
+                asteroidType = _asteroidType,
+                position = transform.position,
+                orbs = GenerateOrbData()
+            };
+
+            EventManager.Instance.TriggerAsteroidSelected(selectedAsteroid);
         }
         public void RandomizeScale()
         {
@@ -124,10 +119,10 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 orb.transform.rotation = upwardRotation;
 
                 // Add to list for tracking
-                _spawnedOrbs.Add(orb);
+                _spawnedOrbs.Add(orb.GetComponent<OrbController>());
 
                 //Spawn cells in the orb
-                OrbManagement.OrbController orbController = orb.GetComponent<OrbManagement.OrbController>();
+                OrbController orbController = orb.GetComponent<OrbController>();
                 int cellCount = GetCellCountByType();
                 orbController.SpawnCells(cellCount);
 
@@ -142,6 +137,26 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
         }
 
+        private List<OrbData> GenerateOrbData()
+        {
+            List<OrbData> orbDataList = new List<OrbData>();
+
+            foreach (var orb in _spawnedOrbs)
+            {
+                OrbData orbData = new OrbData
+                {
+                    position = orb.transform.position,
+                    cells = orb.GenerateCellData()
+                };
+
+                orbDataList.Add(orbData);
+            }
+
+            return orbDataList;
+        }
+
+
+
         /// <summary>
         /// Validates if the given position is far enough from all other orbs.
         /// </summary>
@@ -150,7 +165,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         /// <returns>True if valid, false otherwise.</returns>
         private bool IsPositionValid(Vector3 position, float minSpacing)
         {
-            foreach (GameObject existingOrb in _spawnedOrbs)
+            foreach (var existingOrb in _spawnedOrbs)
             {
                 if (Vector3.Distance(position, existingOrb.transform.position) < minSpacing)
                 {

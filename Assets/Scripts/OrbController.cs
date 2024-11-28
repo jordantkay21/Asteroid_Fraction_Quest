@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace KayosStudios.AsteroidQuest.OrbManagement
+namespace KayosStudios.AsteroidQuest.AsteroidManagement
 {
     public class OrbController : MonoBehaviour
     {
         [SerializeField] GameObject cellPrefab;
         [SerializeField] float orbRadius;
 
-        private List<CellController> spawnedCells = new List<CellController>();
+        private List<CellController> _spawnedCells = new List<CellController>();
         
 
         public void SpawnCells(int cellCount)
@@ -30,7 +30,7 @@ namespace KayosStudios.AsteroidQuest.OrbManagement
                 cellController.Initilize(randomDirection, orbRadius);
 
                 //Add cell to list for tracking
-                spawnedCells.Add(cellController);
+                _spawnedCells.Add(cellController);
             }
 
             Debug.Log($"Orb contains <color=orange>{cellCount} cells</color> based on asteroid type.");
@@ -38,14 +38,14 @@ namespace KayosStudios.AsteroidQuest.OrbManagement
 
         public void EnergizedCells(int energizedCellCount)
         {
-            if (energizedCellCount > spawnedCells.Count)
+            if (energizedCellCount > _spawnedCells.Count)
             {
                 Debug.LogWarning("Energized cell count exceeds total cells. Adjusting to max");
-                energizedCellCount = spawnedCells.Count;
+                energizedCellCount = _spawnedCells.Count;
             }
 
             //Shuffle and select random cells to energize
-            List<CellController> shuffledCells = new List<CellController>(spawnedCells);
+            List<CellController> shuffledCells = new List<CellController>(_spawnedCells);
             for(int i = 0; i < energizedCellCount; i++)
             {
                 int randomIndex = Random.Range(0, shuffledCells.Count);
@@ -55,6 +55,23 @@ namespace KayosStudios.AsteroidQuest.OrbManagement
             }
 
             Debug.Log($"Energized <color=yellow>{energizedCellCount} cells</color>");
+        }
+
+        public List<CellData> GenerateCellData()
+        {
+            List<CellData> cellDataList = new List<CellData>();
+
+            foreach (var cell in _spawnedCells)
+            {
+                CellData cellData = new CellData
+                {
+                    isEnergized = cell.IsEnergized()
+                };
+
+                cellDataList.Add(cellData);
+            }
+
+            return cellDataList;
         }
     }
 }

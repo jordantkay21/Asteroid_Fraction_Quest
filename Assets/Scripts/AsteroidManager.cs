@@ -23,17 +23,11 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         private void OnEnable()
         {
             EventManager.Instance.OnStart += InitializeAsteroidManager;
-
-            EventManager.Instance.OnAsteroidSelected += HandleAsteroidSelection;
-            EventManager.Instance.OnAsteroidHovered += HandleAsteroidHover;
         }
 
         private void OnDisable()
         {
             EventManager.Instance.OnStart -= InitializeAsteroidManager;
-
-            EventManager.Instance.OnAsteroidSelected -= HandleAsteroidSelection;
-            EventManager.Instance.OnAsteroidHovered -= HandleAsteroidHover;
         }
 
         private void InitializeAsteroidManager()
@@ -54,18 +48,6 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             SpawnAsteroids(2);
             ValidateAsteroidPositions();
             CenterAsteroidGroup();
-        }
-
-        private void HandleAsteroidSelection(AsteroidController selectedAsteroid)
-        {
-            //Handle asteroid selection
-            Debug.Log($"Asteroid {selectedAsteroid.name} selected!");
-        }
-
-        private void HandleAsteroidHover(AsteroidController hoveredAsteroid)
-        {
-            //Handle asteroid hover
-            Debug.Log($"Currently hovering over asteroid {hoveredAsteroid.name}!");
         }
 
         public void SpawnAsteroids(int count)
@@ -96,9 +78,6 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 //Spawn random orbs on the asteroid
                 asteroid.SpawnOrbs();
 
-                //Trigger the asteroid spawned event
-                EventManager.Instance.TriggerAsteroidSpawned(asteroid);
-
                 //Add to the list of spawned asteroids
                 _spawnedAsteroids.Add(asteroid);
             }
@@ -106,8 +85,6 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             //Validate positions after all asteroids are spawned
             ValidateAsteroidPositions();
 
-            //Trigger the all asteroids spawned event
-            EventManager.Instance.TriggerAllAsteroidsSpawned();
         }
 
         private void ValidateAsteroidPositions()

@@ -19,17 +19,9 @@ namespace KayosStudios.AsteroidQuest
         //event to notify when the EventManager starts
         public event Action OnStart;
 
-        //event for when an asteroid is spawned
-        public event Action<AsteroidManagement.AsteroidController> OnAsteroidSpawned;
-
         //event for when an asteroid is selected
-        public event Action<AsteroidManagement.AsteroidController> OnAsteroidSelected;
+        public event Action<AsteroidData> OnAsteroidSelected;
 
-        //event for when all asteroids are spawned
-        public event Action OnAllAsteroidsSpawned;
-
-        //event for when all asteroids are spawned
-        public event Action<AsteroidManagement.AsteroidController> OnAsteroidHovered;
 
         private void Start()
         {
@@ -38,26 +30,9 @@ namespace KayosStudios.AsteroidQuest
         }
 
         //Methods to invoke events
-        public void TriggerAsteroidSpawned(AsteroidManagement.AsteroidController asteroid)
-        {
-            OnAsteroidSpawned?.Invoke(asteroid);
-        }
-
-        public void TriggerAsteroidSelected(AsteroidManagement.AsteroidController asteroid)
+        public void TriggerAsteroidSelected(AsteroidData asteroid)
         {
             OnAsteroidSelected?.Invoke(asteroid);
         }
-
-        public void TriggerAllAsteroidsSpawned()
-        {
-            OnAllAsteroidsSpawned?.Invoke();
-        }
-
-        public void TriggerAsteroidHovered(AsteroidManagement.AsteroidController asteroid)
-        {
-            OnAsteroidHovered?.Invoke(asteroid);
-        }
-
-
     }
 }
