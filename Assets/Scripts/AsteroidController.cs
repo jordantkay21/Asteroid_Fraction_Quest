@@ -29,6 +29,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
             AsteroidData selectedAsteroid = new AsteroidData
             {
+                asteroidObj = gameObject,
                 asteroidType = _asteroidType,
                 position = transform.position,
                 orbs = GenerateOrbData()

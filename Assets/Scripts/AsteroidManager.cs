@@ -1,53 +1,22 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace KayosStudios.AsteroidQuest.AsteroidManagement
 {
-    public class AsteroidManager : MonoBehaviour
+    public class AsteroidManager
     {
-        [Header("Asteroid Settings")]
-        [Tooltip("Array of Asteroid Prefabs")]
         public GameObject[] asteroidPrefabs;
-        [Tooltip("Padding to keep asteroids within the player's screen")]
         public float screenBoundaryPadding = 1f;
-        [Tooltip("Minimum spacing between asteroids")]
         public float minSpacing = 3f;
-
-        [Header("Seed Settings")]
-        [Tooltip("Seed for reproducible environments (set -1 for random seed)")]
-        public int seed = -1;
 
         private List<AsteroidController> _spawnedAsteroids = new List<AsteroidController>();
 
-        private void OnEnable()
-        {
-            EventManager.Instance.OnStart += InitializeAsteroidManager;
-        }
+        private IObjectInstantiator _instantiator;
 
-        private void OnDisable()
+        public AsteroidManager(IObjectInstantiator instantiator)
         {
-            EventManager.Instance.OnStart -= InitializeAsteroidManager;
-        }
-
-        private void InitializeAsteroidManager()
-        {
-            //Set the random seed
-            if (seed != -1)
-            {
-                Debug.Log($"Initializing with Seed: {seed}");
-                Random.InitState(seed);
-            }
-            else
-            {
-                seed = System.DateTime.Now.Millisecond;
-                Random.InitState(seed);
-                Debug.Log($"Initializing with Random Seed : {seed}");
-            }
-
-            SpawnAsteroids(2);
-            ValidateAsteroidPositions();
-            CenterAsteroidGroup();
+            _instantiator = instantiator;
         }
 
         public void SpawnAsteroids(int count)
@@ -58,10 +27,12 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             for (int i = 0; i < count; i++)
             {
                 //Randomly pick an asteroid type
-                GameObject asteroidPrefab = asteroidPrefabs[Random.Range(0, asteroidPrefabs.Length)];
+                GameObject asteroidPrefab = asteroidPrefabs[UnityEngine.Random.Range(0, asteroidPrefabs.Length)];
 
-                //Spawn the asteroid and randomize its properties
-                AsteroidController asteroid = Instantiate(asteroidPrefab).GetComponent<AsteroidController>();
+                //Use the interface to instantiate the object
+                GameObject asteroidObject = _instantiator.InstantiateObject(asteroidPrefab);
+                AsteroidController asteroid = asteroidObject.GetComponent<AsteroidController>();
+
                 asteroid.RandomizeScale();
                 asteroid.AssignType();
 
@@ -87,7 +58,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
         }
 
-        private void ValidateAsteroidPositions()
+        public void ValidateAsteroidPositions()
         {
             float screenLeft = -Camera.main.aspect * Camera.main.orthographicSize + screenBoundaryPadding;
             float screenRight = Camera.main.aspect * Camera.main.orthographicSize - screenBoundaryPadding;
@@ -103,7 +74,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             }
         }
 
-        private void CenterAsteroidGroup()
+        public void CenterAsteroidGroup()
         {
             float groupCenter = 0f;
 

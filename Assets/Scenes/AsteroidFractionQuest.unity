@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 223929187}
   - component: {fileID: 223929188}
   - component: {fileID: 223929186}
+  - component: {fileID: 223929189}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -184,6 +185,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69cedccc71f4dd140b99f51cb38b1af5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &223929189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223929185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35bb0dd1e198e274f8ba293c3c5e0e0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _selectedAsteroid:
+    asteroidObj: {fileID: 0}
+    asteroidType: 0
+    position: {x: 0, y: 0, z: 0}
+    orbs: []
 --- !u!1 &473929870
 GameObject:
   m_ObjectHideFlags: 0
