@@ -7,7 +7,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
     /// <summary>
     /// Controls the behavior of individual asteroids.
     /// </summary>
-    public class AsteroidController : MonoBehaviour
+    public class AsteroidController : MonoBehaviour, ISelectable
     {
         [Header("Asteroid Properties")]
         public float minScale;
@@ -23,9 +23,9 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         private List<OrbController> _spawnedOrbs = new List<OrbController>();
         private AsteroidType _asteroidType;
 
-        private void OnMouseDown()
+        public void OnSelect()
         {
-            //Trigger the asteroid selected event
+            Debug.Log($"Asteroid {name} selected.");
 
             AsteroidData selectedAsteroid = new AsteroidData
             {

@@ -4,13 +4,17 @@ using UnityEngine;
 
 namespace KayosStudios.AsteroidQuest.AsteroidManagement
 {
-    public class OrbController : MonoBehaviour
+    public class OrbController : MonoBehaviour, ISelectable
     {
         [SerializeField] GameObject cellPrefab;
         [SerializeField] float orbRadius;
 
         private List<CellController> _spawnedCells = new List<CellController>();
-        
+
+        public void OnSelect()
+        {
+            Debug.Log($"Orb {name} selected.");
+        }
 
         public void SpawnCells(int cellCount)
         {
@@ -73,5 +77,6 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
             return cellDataList;
         }
+
     }
 }
