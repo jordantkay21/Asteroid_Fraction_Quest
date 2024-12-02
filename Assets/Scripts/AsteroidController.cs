@@ -153,20 +153,28 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         {
             List<OrbData> orbDataList = new List<OrbData>();
 
-            foreach (var orb in _spawnedOrbs)
+            for (int i = 0; i < _spawnedOrbs.Count; i++)
             {
+                var orb = _spawnedOrbs[i];
+
+                //Generate data for each orb
                 OrbData orbData = new OrbData
                 {
                     position = orb.transform.position,
-                    cells = orb.GenerateCellData(out cellTotal)
+                    cells = orb.GenerateCellData(out int CellTotal)
                 };
 
+                //Assign a unique name to the orb
+                orb.name = $"orb{i}.{name}";
+
+                //Add the orb's data to the list
                 orbDataList.Add(orbData);
             }
 
             orbCount = orbDataList.Count;
 
             return orbDataList;
+
         }
 
 

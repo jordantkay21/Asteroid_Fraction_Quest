@@ -84,19 +84,24 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         {
             List<CellData> cellDataList = new List<CellData>();
 
-            foreach (var cell in _spawnedCells)
+            for(int i=0; i < _spawnedCells.Count; i++)
             {
+                var cell = _spawnedCells[i];
+
+                //Generate data for each cell
                 CellData cellData = new CellData
                 {
                     isEnergized = cell.IsEnergized()
                 };
 
-                cellDataList.Add(cellData);
+                //Assign a unique name to the orb
+                cell.name = $"cell{i}.{name}";
             }
 
             cellTotal = cellDataList.Count;
 
             return cellDataList;
+
         }
 
     }

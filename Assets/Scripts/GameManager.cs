@@ -31,7 +31,8 @@ namespace KayosStudios.AsteroidQuest
     public enum GamePhase
     {
         S1_PhaseOne,
-        S1_PhaseTwo
+        S1_PhaseTwo,
+        S1_PhaseThree
     }
 
     [System.Serializable]
@@ -130,6 +131,20 @@ namespace KayosStudios.AsteroidQuest
         private void Update()
         {
             inputHandler.HandleInputs(rotationSpeed);
+
+            switch (currentPhase)
+            {
+                case GamePhase.S1_PhaseOne:
+                    break;
+                case GamePhase.S1_PhaseTwo:
+                    if(orbSelectionCount == selectedAsteroid.orbTotal)
+                    {
+                        SetPhase(GamePhase.S1_PhaseThree);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void SpawnAsteroids(int count)
