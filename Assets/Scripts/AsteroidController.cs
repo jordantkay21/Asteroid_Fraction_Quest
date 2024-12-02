@@ -37,6 +37,11 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
             EventManager.Instance.TriggerAsteroidSelected(selectedAsteroid);
         }
+        public void OnRotate(float horizontalInput, float verticalInput, float rotationSpeed)
+        {
+            transform.Rotate(Vector3.up, horizontalInput * rotationSpeed * Time.deltaTime, Space.World);
+            transform.Rotate(Vector3.right, verticalInput * rotationSpeed * Time.deltaTime, Space.World);
+        }
         public void RandomizeScale()
         {
             float randomScale = Random.Range(minScale, maxScale);

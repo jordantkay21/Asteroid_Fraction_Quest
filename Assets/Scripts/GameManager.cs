@@ -79,12 +79,13 @@ namespace KayosStudios.AsteroidQuest
         public int spawnCount;
         public GameObject[] asteroidPrefabs;
         public float minAsteroidSpacing;
+        public float rotationSpeed;
         
-        [Header("Phase 1 Settings")]
+        [Header("Phase 1 Data")]
         public List<AsteroidData> spawnedAsteroids;
 
-        [Header("Phase 2 Settings")]
-        public AsteroidData selectedAsteroid;
+        [Header("Phase 2 Data")]
+        public AsteroidData selectedAsteroid; 
 
         private void OnEnable()
         {
@@ -124,7 +125,7 @@ namespace KayosStudios.AsteroidQuest
 
         private void Update()
         {
-            inputHandler.HandleInputs();
+            inputHandler.HandleInputs(rotationSpeed);
         }
 
         public void SpawnAsteroids(int count)
