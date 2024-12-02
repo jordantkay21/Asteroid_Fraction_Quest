@@ -6,14 +6,33 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 {
     public class OrbController : MonoBehaviour, ISelectable
     {
+        [SerializeField] Material defaultMat;
+        [SerializeField] Material selectedMat;
         [SerializeField] GameObject cellPrefab;
         [SerializeField] float orbRadius;
+        public bool isSelected { get; private set; }
 
         private List<CellController> _spawnedCells = new List<CellController>();
 
         public void OnSelect()
         {
             Debug.Log($"Orb {name} selected.");
+
+            MeshRenderer renderer = GetComponent<MeshRenderer>();
+            if (renderer != null)
+            {
+                if (!isSelected)
+                {
+                    isSelected = true;
+                    renderer.material = selectedMat;
+                }
+                else
+                {
+                    isSelected = false;
+                    renderer.material = defaultMat; }
+            }
+
+            EventManager.Instance.TriggerOrbSelection(this);
         }
 
         public void SpawnCells(int cellCount)
@@ -61,7 +80,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             Debug.Log($"Energized <color=yellow>{energizedCellCount} cells</color>");
         }
 
-        public List<CellData> GenerateCellData()
+        public List<CellData> GenerateCellData(out int cellTotal)
         {
             List<CellData> cellDataList = new List<CellData>();
 
@@ -74,6 +93,8 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
                 cellDataList.Add(cellData);
             }
+
+            cellTotal = cellDataList.Count;
 
             return cellDataList;
         }

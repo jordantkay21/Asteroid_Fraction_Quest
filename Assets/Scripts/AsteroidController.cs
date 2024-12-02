@@ -20,6 +20,10 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         [Tooltip("Minimum distance between orbs")]
         public float minSpacing;
 
+        [Header("Orb Data")]
+        public int orbTotal;
+        public int cellTotal;
+
         private List<OrbController> _spawnedOrbs = new List<OrbController>();
         private AsteroidType _asteroidType;
 
@@ -32,10 +36,12 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 asteroidObj = gameObject,
                 asteroidType = _asteroidType,
                 position = transform.position,
-                orbs = GenerateOrbData()
+                orbs = GenerateOrbData(out orbTotal),
+                orbTotal = this.orbTotal,
+                cellTotal = this.cellTotal
             };
 
-            EventManager.Instance.TriggerAsteroidSelected(selectedAsteroid);
+            EventManager.Instance.TriggerAsteroidSelection(selectedAsteroid);
         }
         public void OnRotate(float horizontalInput, float verticalInput, float rotationSpeed)
         {
@@ -143,7 +149,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
         }
 
-        private List<OrbData> GenerateOrbData()
+        private List<OrbData> GenerateOrbData(out int orbCount)
         {
             List<OrbData> orbDataList = new List<OrbData>();
 
@@ -152,11 +158,13 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 OrbData orbData = new OrbData
                 {
                     position = orb.transform.position,
-                    cells = orb.GenerateCellData()
+                    cells = orb.GenerateCellData(out cellTotal)
                 };
 
                 orbDataList.Add(orbData);
             }
+
+            orbCount = orbDataList.Count;
 
             return orbDataList;
         }

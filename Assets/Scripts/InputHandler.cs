@@ -35,22 +35,27 @@ namespace KayosStudios.AsteroidQuest
             }
         }
 
+        private void OnClick()
+        {
+            //Create a ray from the camera to the mouse position
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            //Perform the raycast
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                //Check if the object hit implemts ISelectable
+                if (hit.collider.TryGetComponent<ISelectable>(out ISelectable selectable))
+                {
+                    selectable.OnSelect();
+                }
+            }
+        }
+
         private void HandlePhaseOneInputs()
         {
             if (Input.GetMouseButtonDown(0)) //Left Click
             {
-                //Create a ray from the camera to the mouse position
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                //Perform the raycast
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    //Check if the object hit implemts ISelectable
-                    if (hit.collider.TryGetComponent<ISelectable>(out ISelectable selectable))
-                    {
-                        selectable.OnSelect();
-                    }
-                }
+                OnClick();
             }
         }
 
@@ -67,16 +72,7 @@ namespace KayosStudios.AsteroidQuest
             // Select orbs
             if (Input.GetMouseButtonDown(0)) // Left-click
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    OrbController orb = hit.collider.GetComponent<OrbController>();
-                    if (orb != null)
-                    {
-                        Debug.Log($"Orb selected: {orb.name}");
-                        // Handle orb selection logic here
-                    }
-                }
+                OnClick();
             }
         }
     }

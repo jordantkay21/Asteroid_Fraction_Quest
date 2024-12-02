@@ -289,6 +289,9 @@ MonoBehaviour:
     asteroidType: 0
     position: {x: 0, y: 0, z: 0}
     orbs: []
+    orbTotal: 0
+    cellTotal: 0
+  orbSelectionCount: 0
 --- !u!1 &473929870
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,7 +353,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 23.26632
+  field of view: 43.06323
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -571,7 +574,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 23.26632
+    FieldOfView: 43.06323
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000

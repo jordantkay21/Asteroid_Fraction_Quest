@@ -41,6 +41,8 @@ namespace KayosStudios.AsteroidQuest
         public AsteroidType asteroidType;
         public Vector3 position;
         public List<OrbData> orbs;
+        public int orbTotal;
+        public int cellTotal;
     }
 
     [System.Serializable]
@@ -85,18 +87,20 @@ namespace KayosStudios.AsteroidQuest
         public List<AsteroidData> spawnedAsteroids;
 
         [Header("Phase 2 Data")]
-        public AsteroidData selectedAsteroid; 
+        public AsteroidData selectedAsteroid;
+        public int orbSelectionCount;
 
         private void OnEnable()
         {
             EventManager.Instance.OnStart += InitilizeGame;
-            EventManager.Instance.OnAsteroidSelected += HandleAsteroidSelection;
+            EventManager.Instance.OnAsteroidSelection += HandleAsteroidSelection;
+            EventManager.Instance.OnOrbSelection += HandleOrbSelection;
         }
 
         private void OnDisable()
         {
             EventManager.Instance.OnStart -= InitilizeGame;
-            EventManager.Instance.OnAsteroidSelected -= HandleAsteroidSelection;
+            EventManager.Instance.OnAsteroidSelection -= HandleAsteroidSelection;
         }
 
         private void Awake()
@@ -148,6 +152,16 @@ namespace KayosStudios.AsteroidQuest
                 SetPhase(GamePhase.S1_PhaseTwo, selectedAsteroid);
             }
 
+        }
+
+        public void HandleOrbSelection(OrbController selectedOrb)
+        {
+            if (selectedOrb.isSelected == true)
+            {
+                orbSelectionCount++;
+            }
+            else
+                orbSelectionCount--;
         }
 
         #region Helper Methods
