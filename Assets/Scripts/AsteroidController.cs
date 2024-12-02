@@ -20,6 +20,10 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         [Tooltip("Minimum distance between orbs")]
         public float minSpacing;
 
+        [Header("Orb Data")]
+        public int orbTotal;
+        public int cellTotal;
+
         private List<OrbController> _spawnedOrbs = new List<OrbController>();
         private AsteroidType _asteroidType;
 
@@ -32,10 +36,17 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 asteroidObj = gameObject,
                 asteroidType = _asteroidType,
                 position = transform.position,
-                orbs = GenerateOrbData()
+                orbs = GenerateOrbData(out orbTotal),
+                orbTotal = this.orbTotal,
+                cellTotal = this.cellTotal
             };
 
-            EventManager.Instance.TriggerAsteroidSelected(selectedAsteroid);
+            EventManager.Instance.TriggerAsteroidSelection(selectedAsteroid);
+        }
+        public void OnRotate(float horizontalInput, float verticalInput, float rotationSpeed)
+        {
+            transform.Rotate(Vector3.up, horizontalInput * rotationSpeed * Time.deltaTime, Space.World);
+            transform.Rotate(Vector3.right, verticalInput * rotationSpeed * Time.deltaTime, Space.World);
         }
         public void RandomizeScale()
         {
@@ -138,22 +149,32 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
         }
 
-        private List<OrbData> GenerateOrbData()
+        private List<OrbData> GenerateOrbData(out int orbCount)
         {
             List<OrbData> orbDataList = new List<OrbData>();
 
-            foreach (var orb in _spawnedOrbs)
+            for (int i = 0; i < _spawnedOrbs.Count; i++)
             {
+                var orb = _spawnedOrbs[i];
+
+                //Generate data for each orb
                 OrbData orbData = new OrbData
                 {
                     position = orb.transform.position,
-                    cells = orb.GenerateCellData()
+                    cells = orb.GenerateCellData(out int CellTotal)
                 };
 
+                //Assign a unique name to the orb
+                orb.name = $"orb{i}.{name}";
+
+                //Add the orb's data to the list
                 orbDataList.Add(orbData);
             }
 
+            orbCount = orbDataList.Count;
+
             return orbDataList;
+
         }
 
 

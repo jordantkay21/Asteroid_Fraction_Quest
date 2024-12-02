@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using KayosStudios.AsteroidQuest.AsteroidManagement;
 
 namespace KayosStudios.AsteroidQuest
 {
@@ -20,8 +21,12 @@ namespace KayosStudios.AsteroidQuest
         public event Action OnStart;
 
         //event for when an asteroid is selected
-        public event Action<AsteroidData> OnAsteroidSelected;
+        public event Action<AsteroidData> OnAsteroidSelection;
+        public void TriggerAsteroidSelection(AsteroidData asteroid) => OnAsteroidSelection?.Invoke(asteroid);
 
+        //event for when an orb is selected
+        public event Action<OrbController> OnOrbSelection;
+        public void TriggerOrbSelection(OrbController orb) => OnOrbSelection?.Invoke(orb);
 
         private void Start()
         {
@@ -30,9 +35,5 @@ namespace KayosStudios.AsteroidQuest
         }
 
         //Methods to invoke events
-        public void TriggerAsteroidSelected(AsteroidData asteroid)
-        {
-            OnAsteroidSelected?.Invoke(asteroid);
-        }
     }
 }

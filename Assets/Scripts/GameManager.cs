@@ -31,7 +31,8 @@ namespace KayosStudios.AsteroidQuest
     public enum GamePhase
     {
         S1_PhaseOne,
-        S1_PhaseTwo
+        S1_PhaseTwo,
+        S1_PhaseThree
     }
 
     [System.Serializable]
@@ -41,6 +42,8 @@ namespace KayosStudios.AsteroidQuest
         public AsteroidType asteroidType;
         public Vector3 position;
         public List<OrbData> orbs;
+        public int orbTotal;
+        public int cellTotal;
     }
 
     [System.Serializable]
@@ -79,23 +82,26 @@ namespace KayosStudios.AsteroidQuest
         public int spawnCount;
         public GameObject[] asteroidPrefabs;
         public float minAsteroidSpacing;
+        public float rotationSpeed;
         
-        [Header("Phase 1 Settings")]
+        [Header("Phase 1 Data")]
         public List<AsteroidData> spawnedAsteroids;
 
-        [Header("Phase 2 Settings")]
+        [Header("Phase 2 Data")]
         public AsteroidData selectedAsteroid;
+        public int orbSelectionCount;
 
         private void OnEnable()
         {
             EventManager.Instance.OnStart += InitilizeGame;
-            EventManager.Instance.OnAsteroidSelected += HandleAsteroidSelection;
+            EventManager.Instance.OnAsteroidSelection += HandleAsteroidSelection;
+            EventManager.Instance.OnOrbSelection += HandleOrbSelection;
         }
 
         private void OnDisable()
         {
             EventManager.Instance.OnStart -= InitilizeGame;
-            EventManager.Instance.OnAsteroidSelected -= HandleAsteroidSelection;
+            EventManager.Instance.OnAsteroidSelection -= HandleAsteroidSelection;
         }
 
         private void Awake()
@@ -124,7 +130,21 @@ namespace KayosStudios.AsteroidQuest
 
         private void Update()
         {
-            inputHandler.HandleInputs();
+            inputHandler.HandleInputs(rotationSpeed);
+
+            switch (currentPhase)
+            {
+                case GamePhase.S1_PhaseOne:
+                    break;
+                case GamePhase.S1_PhaseTwo:
+                    if(orbSelectionCount == selectedAsteroid.orbTotal)
+                    {
+                        SetPhase(GamePhase.S1_PhaseThree);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void SpawnAsteroids(int count)
@@ -147,6 +167,16 @@ namespace KayosStudios.AsteroidQuest
                 SetPhase(GamePhase.S1_PhaseTwo, selectedAsteroid);
             }
 
+        }
+
+        public void HandleOrbSelection(OrbController selectedOrb)
+        {
+            if (selectedOrb.isSelected == true)
+            {
+                orbSelectionCount++;
+            }
+            else
+                orbSelectionCount--;
         }
 
         #region Helper Methods
