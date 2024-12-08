@@ -91,5 +91,16 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 asteroid.transform.position -= new Vector3(groupCenter, 0, 0);
             }
         }
+
+        public void DisableNonSelectedAsteroids(AsteroidController selectedAsteroid)
+        {
+            foreach (var asteroid in _spawnedAsteroids)
+            {
+                if (asteroid != selectedAsteroid)
+                {
+                    asteroid.gameObject.SetActive(false); //Disable non-selected asteroid
+                }
+            }
+        }
     }
 } 

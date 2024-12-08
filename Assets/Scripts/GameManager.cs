@@ -154,8 +154,36 @@ namespace KayosStudios.AsteroidQuest
 
         private void SetPhase(GamePhase phase, AsteroidData asteroid = null)
         {
+            // Step 1: Update teh current phase
             currentPhase = phase;
+
+            // Step 2: Handle Logic specific to the new phase
+            if (phase == GamePhase.S1_PhaseThree && selectedAsteroid != null)
+            {
+                AsteroidController asteroidController = selectedAsteroid.asteroidObj.GetComponent<AsteroidController>();
+
+                //Define the group center position (e.g., screen center)
+                Vector3 screenCenter = new Vector3(0, 0, Camera.main.transform.position.z + 10);
+
+                //Move orbs to the center is a side-by-side arrangement and reparent them
+                asteroidController.MoveOrbsToCenter(2f, screenCenter, 1.5f); // Center spacing and duration
+
+                //Disable the asteroid after a delay to ensure the move is triggered
+                StartCoroutine(DisableAsteoridAfterDelay(selectedAsteroid.asteroidObj, 1.5f));
+
+                //Adjust the camera to focus on the grouped orbs
+                float groupWidth = asteroidController.orbTotal * 2f;
+                cameraManager.FocusOnOrbs(screenCenter, groupWidth);
+            }
+
+            //Step 3: Notify other systems about the phase change
             inputHandler.SetPhase(phase, asteroid);
+        }
+
+        private IEnumerator DisableAsteoridAfterDelay(GameObject asteroid, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            asteroid.SetActive(false);
         }
 
         public void HandleAsteroidSelection(AsteroidData selectedAsteroid)
@@ -163,7 +191,15 @@ namespace KayosStudios.AsteroidQuest
             if (currentPhase == GamePhase.S1_PhaseOne)
             {
                 this.selectedAsteroid = selectedAsteroid;
+
+                //Disable other asteroids
+                AsteroidController selectedController = selectedAsteroid.asteroidObj.GetComponent<AsteroidController>();
+                asteroidManager.DisableNonSelectedAsteroids(selectedController);
+                
+                //Focus the camera on the selected asteroid
                 cameraManager.ActivateAsteroidCamera(selectedAsteroid);
+
+                //Transition to Phase 2
                 SetPhase(GamePhase.S1_PhaseTwo, selectedAsteroid);
             }
 
@@ -183,6 +219,12 @@ namespace KayosStudios.AsteroidQuest
         public GameObject InstantiateObject(GameObject prefab)
         {
             return Instantiate(prefab);
+        }
+
+        public Transform CreateOrbContainer()
+        {
+            GameObject orbContainer = new GameObject("OrbContainer");
+            return orbContainer.transform;
         }
         #endregion
     }

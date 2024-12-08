@@ -177,7 +177,47 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
         }
 
+        public void MoveOrbsToCenter(float centerSpacing, Vector3 centerpoint, float moveDuration)
+        {
+            Transform orbContainer = GameManager.Instance.CreateOrbContainer();
 
+            float startX = centerpoint.x - (orbTotal - 1) * centerSpacing / 2f;
+            for(int i = 0; i < _spawnedOrbs.Count; i++)
+            {
+                //Reparent the orb to the container
+                _spawnedOrbs[i].transform.SetParent(orbContainer);
+
+                //Calculate the target position
+                Vector3 targetPosition = new Vector3(startX + i * centerSpacing, centerpoint.y, centerpoint.z);
+
+                //Move the orb
+                StartCoroutine(MoveOrbToPosition(_spawnedOrbs[i].gameObject, targetPosition, moveDuration));
+            }
+        }
+
+        private IEnumerator MoveOrbToPosition(GameObject orb, Vector3 targetPosition, float duration)
+        {
+            Vector3 initialPosition = orb.transform.position;
+            Quaternion initialRotation = orb.transform.rotation;
+            Quaternion uprightRotation = Quaternion.Euler(0, 0, 0); //Ensure upright orientation
+
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                // Interpolate position
+                orb.transform.position = Vector3.Lerp(initialPosition, targetPosition, elapsedTime / duration);
+
+                //Interpolate rotation to upright orientation 
+                orb.transform.rotation = Quaternion.Slerp(initialRotation, uprightRotation, elapsedTime / duration);
+
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            orb.transform.position = targetPosition;
+            orb.transform.rotation = uprightRotation;
+        }
 
         /// <summary>
         /// Validates if the given position is far enough from all other orbs.

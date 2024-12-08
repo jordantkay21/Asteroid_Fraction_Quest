@@ -40,6 +40,16 @@ namespace KayosStudios.AsteroidQuest
             selectionCamera.Priority = 0;
         }
 
+        public void FocusOnOrbs(Vector3 groupCenter, float groupWidth)
+        {
+            asteroidCamera.LookAt = null;
+            asteroidCamera.Follow = null;
+
+            //Calculate new camera position and FOV
+            asteroidCamera.transform.position = new Vector3(groupCenter.x, groupCenter.y, groupCenter.z - 10);
+            asteroidCamera.m_Lens.FieldOfView = Mathf.Lerp(20f, 45f, groupWidth / 10f);
+        }
+
         // Helper method to calculate interpolated FOV
         private float GetFOVFromScale(float scale)
         {
@@ -55,5 +65,6 @@ namespace KayosStudios.AsteroidQuest
             // Interpolate FOV based on normalized value
             return Mathf.Lerp(minFOV, maxFOV, t);
         }
+
     }
 }
