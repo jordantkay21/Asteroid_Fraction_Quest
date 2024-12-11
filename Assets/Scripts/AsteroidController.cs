@@ -184,6 +184,9 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
             float startX = centerpoint.x - (orbTotal - 1) * centerSpacing / 2f;
             for(int i = 0; i < _spawnedOrbs.Count; i++)
             {
+                //Reset material back to default
+                _spawnedOrbs[i].ResetMat();
+
                 //Reparent the orb to the container
                 _spawnedOrbs[i].transform.SetParent(orbContainer);
 

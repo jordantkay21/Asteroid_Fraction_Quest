@@ -120,9 +120,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 801cb175b3ef74949907bd4eae72e36a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  renderer: {fileID: 0}
   defaultMat: {fileID: 2100000, guid: 371dcd88b8c5b7b45aea51e02f440870, type: 2}
   selectedMat: {fileID: 2100000, guid: 62e72e5995ead804daaa147d01000793, type: 2}
+  singleHitMat: {fileID: 2100000, guid: cfa755dd8e0e07d40b15cb3723330ad9, type: 2}
+  doubleHitMat: {fileID: 2100000, guid: 052313f53ff3821428f63821f50f35f7, type: 2}
   cellPrefab: {fileID: 8919086382085477712, guid: fce3ba9796c52dd4c83f3584e0920ff2,
     type: 3}
   orbRadius: 0.5
-  isSelected: 0
+  hitCount: 0

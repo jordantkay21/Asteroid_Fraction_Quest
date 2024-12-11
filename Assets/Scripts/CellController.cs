@@ -10,6 +10,7 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         private bool isEnergized;
 
         [Header("Movement Properties")]
+        [SerializeField] bool canMove = true;
         [Tooltip("Speed of the cell")]
         [SerializeField] float speed = 1f;
         [Tooltip("current movement direction")]
@@ -38,6 +39,9 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
         private void MoveCell()
         {
+
+            if (!canMove) return; //exit if mvoement is disabled
+
             //Move the cell
             transform.localPosition += direction * speed * Time.deltaTime;
 
@@ -54,6 +58,11 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
         public bool IsEnergized()
         {
             return isEnergized;
+        }
+
+        public void StopMovement()
+        {
+            canMove = false;
         }
     }
 }

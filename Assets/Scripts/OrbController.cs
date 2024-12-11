@@ -4,35 +4,125 @@ using UnityEngine;
 
 namespace KayosStudios.AsteroidQuest.AsteroidManagement
 {
+    [RequireComponent(typeof(MeshRenderer))]
     public class OrbController : MonoBehaviour, ISelectable
     {
+        [Header("Materials")]
+        [SerializeField] MeshRenderer renderer;
         [SerializeField] Material defaultMat;
         [SerializeField] Material selectedMat;
+        [SerializeField] Material singleHitMat;
+        [SerializeField] Material doubleHitMat;
+
+        [Header("Settings")]
         [SerializeField] GameObject cellPrefab;
         [SerializeField] float orbRadius;
-        public bool isSelected { get; private set; }
+        [SerializeField] int hitCount = 0;
 
+        public bool isSelected { get; private set; }
         private List<CellController> _spawnedCells = new List<CellController>();
+
+        private void Start()
+        {
+            renderer = GetComponent<MeshRenderer>();
+        }
 
         public void OnSelect()
         {
-            Debug.Log($"Orb {name} selected.");
+            GamePhase currentPhase = GameManager.Instance.currentPhase;
 
-            MeshRenderer renderer = GetComponent<MeshRenderer>();
-            if (renderer != null)
+            Debug.Log($"Orb {name} selected in phase {currentPhase}.");
+
+            switch (currentPhase)
             {
-                if (!isSelected)
-                {
-                    isSelected = true;
-                    renderer.material = selectedMat;
-                }
-                else
-                {
-                    isSelected = false;
-                    renderer.material = defaultMat; }
+                case GamePhase.S1_PhaseTwo:
+                    HandlePhaseTwoSelection();
+                    break;
+
+                case GamePhase.S1_PhaseThree:
+                    HandlePhaseThreeSelection();
+                    break;
+
+                default:
+                    Debug.LogWarning($"Orb selection is not valid in during {currentPhase}.");
+                    break;
             }
 
+
+        }
+
+        private void HandlePhaseTwoSelection()
+        {
+            if (!isSelected)
+            {
+                isSelected = true;
+                renderer.material = selectedMat;
+            }
+            else
+            {
+                isSelected = false;
+                renderer.material = defaultMat;
+            }
+
+
             EventManager.Instance.TriggerOrbSelection(this);
+        }
+
+        private void HandlePhaseThreeSelection()
+        {
+            hitCount++;
+
+            Debug.Log($"Orb {name} has been hit {hitCount} times.");
+
+            if (hitCount == 1)
+                renderer.material = singleHitMat;
+            else if (hitCount == 2)
+                renderer.material = doubleHitMat;
+            else if (hitCount == 3)
+            {
+                Debug.Log($"Processing third hit logic for {name}.");
+
+                // Step 1: Create a new parent object for the cells
+                GameObject cellParent = new GameObject($"{name}_Cells");
+                cellParent.transform.position = transform.position; // Place at the orb's position
+
+                // Step 2: Separate energized and non-energized cells
+                List<CellController> energizedCells = new List<CellController>();
+                List<CellController> nonEnergizedCells = new List<CellController>();
+
+                foreach (var cell in _spawnedCells)
+                {
+                    cell.StopMovement();
+
+                    if (cell.IsEnergized())
+                        energizedCells.Add(cell);
+                    else
+                        nonEnergizedCells.Add(cell);
+                }
+
+                // Step 3: Reparent and stack cells
+                float yOffset = 0.2f; // Adjust based on cell size
+                float baseY = transform.position.y;
+
+                // Non-energized cells (on top)
+                for (int i = 0; i < nonEnergizedCells.Count; i++)
+                {
+                    var cell = nonEnergizedCells[i];
+                    cell.transform.SetParent(cellParent.transform);
+                    cell.transform.position = new Vector3(transform.position.x, baseY + (i * yOffset), transform.position.z);
+                }
+
+                // Energized cells (on bottom)
+                for (int i = 0; i < energizedCells.Count; i++)
+                {
+                    var cell = energizedCells[i];
+                    cell.transform.SetParent(cellParent.transform);
+                    cell.transform.position = new Vector3(transform.position.x, baseY - ((i + 1) * yOffset), transform.position.z);
+                }
+
+                // Step 4: Disable the orb
+                gameObject.SetActive(false);
+            }
         }
 
         public void SpawnCells(int cellCount)
@@ -102,6 +192,11 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
 
             return cellDataList;
 
+        }
+
+        public void ResetMat()
+        {
+            renderer.material = defaultMat;
         }
 
     }

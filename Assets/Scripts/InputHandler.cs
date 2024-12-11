@@ -30,6 +30,9 @@ namespace KayosStudios.AsteroidQuest
                 case GamePhase.S1_PhaseTwo:
                     HandlePhaseTwoInputs();
                     break;
+                case GamePhase.S1_PhaseThree:
+                    HandlePhaseThreeInputs();
+                    break;
                 default:
                     break;
             }
@@ -71,6 +74,14 @@ namespace KayosStudios.AsteroidQuest
 
             // Select orbs
             if (Input.GetMouseButtonDown(0)) // Left-click
+            {
+                OnClick();
+            }
+        }
+
+        private void HandlePhaseThreeInputs()
+        {
+            if (Input.GetMouseButtonDown(0)) //Left Click
             {
                 OnClick();
             }
