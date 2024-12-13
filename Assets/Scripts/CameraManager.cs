@@ -40,14 +40,14 @@ namespace KayosStudios.AsteroidQuest
             selectionCamera.Priority = 0;
         }
 
-        public void FocusOnOrbs(Vector3 groupCenter, float groupWidth)
+        public void FocusOnOrbs(Transform orbContainer)
         {
-            asteroidCamera.LookAt = null;
-            asteroidCamera.Follow = null;
+            FocusOnContainer(orbContainer, asteroidCamera);
+        }
 
-            //Calculate new camera position and FOV
-            asteroidCamera.transform.position = new Vector3(groupCenter.x, groupCenter.y, groupCenter.z - 10);
-            asteroidCamera.m_Lens.FieldOfView = Mathf.Lerp(20f, 45f, groupWidth / 10f);
+        public void FocusOnCells(Transform cellContainer)
+        {
+            FocusOnContainer(cellContainer, asteroidCamera);
         }
 
         // Helper method to calculate interpolated FOV
@@ -64,6 +64,48 @@ namespace KayosStudios.AsteroidQuest
 
             // Interpolate FOV based on normalized value
             return Mathf.Lerp(minFOV, maxFOV, t);
+        }
+
+        public void FocusOnContainer(Transform container, CinemachineVirtualCamera camera)
+        {
+            //Calculate combined bounds of the container
+            Bounds combinedBounds = new Bounds(container.position, Vector3.zero);
+
+            foreach (Transform child in container)
+            {
+                Renderer childRenderer = child.GetComponent<Renderer>();
+                if (childRenderer != null)
+                {
+                    combinedBounds.Encapsulate(childRenderer.bounds);
+                }
+            }
+
+            //Ensure bounds are valid
+            if (combinedBounds.size == Vector3.zero)
+            {
+                Debug.LogWarning("Container has no renderable children. Focusing aborted.");
+                return;
+            }
+
+            //Calculate the distance from the camera to the container center
+            Vector3 cameraPosition = camera.transform.position;
+            float distance = Vector3.Distance(cameraPosition, combinedBounds.center);
+
+            //Use the larger dimension (width or height) to calculate the required FOV
+            float objectHeight = combinedBounds.size.y;
+            float objectWidth = combinedBounds.size.x;
+            float aspectRatio = Screen.width / (float)Screen.height;
+
+            //Compute vertical and horizontal FOV
+            float verticalFOV = 2 * Mathf.Atan((objectHeight / 2) / distance) * Mathf.Rad2Deg;
+            float horizontalFOV = 2 * Mathf.Atan((objectWidth / 2) / (distance * aspectRatio)) * Mathf.Rad2Deg;
+
+            //Set the camera's FOV to ensure the object fits
+            camera.m_Lens.FieldOfView = Mathf.Max(verticalFOV, horizontalFOV);
+
+            //Adjust the camera's LookAt and Follow targets
+            camera.LookAt = container;
+            camera.Follow = container;
         }
 
     }

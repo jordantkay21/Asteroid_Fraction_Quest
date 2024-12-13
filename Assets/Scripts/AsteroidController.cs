@@ -196,6 +196,8 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 //Move the orb
                 StartCoroutine(MoveOrbToPosition(_spawnedOrbs[i].gameObject, targetPosition, moveDuration));
             }
+
+            GameManager.Instance.cameraManager.FocusOnOrbs(orbContainer);
         }
 
         private IEnumerator MoveOrbToPosition(GameObject orb, Vector3 targetPosition, float duration)
