@@ -254,6 +254,34 @@ namespace KayosStudios.AsteroidQuest
             cellContainer = new GameObject("CellContainer");
             return cellContainer.transform;
         }
+
+        public void ConstrainOrbsToFOV(Transform orbContainer)
+        {
+            if (orbContainer == null) return;
+
+            // Get the camera's frustum size at the container's depth
+            float distance = Mathf.Abs(Camera.main.transform.position.z - orbContainer.position.z);
+            Vector2 frustumSize = cameraManager.GetFrustumSizeAtDepth(distance);
+
+            // Calculate the visible bounds
+            Vector3 containerCenter = orbContainer.position;
+            float halfWidth = frustumSize.x / 2;
+            float halfHeight = frustumSize.y / 2;
+            Vector3 minBounds = containerCenter - new Vector3(halfWidth, halfHeight, 0);
+            Vector3 maxBounds = containerCenter + new Vector3(halfWidth, halfHeight, 0);
+
+            // Adjust each orb's position to fit within the bounds
+            foreach (Transform child in orbContainer)
+            {
+                Vector3 clampedPosition = child.position;
+                clampedPosition.x = Mathf.Clamp(clampedPosition.x, minBounds.x, maxBounds.x);
+                clampedPosition.y = Mathf.Clamp(clampedPosition.y, minBounds.y, maxBounds.y);
+                clampedPosition.z = containerCenter.z; // Keep Z consistent with container depth
+                child.position = clampedPosition;
+            }
+
+            Debug.Log("Constrained orbs to fit within camera's FOV.");
+        }
         #endregion
         #endregion
 

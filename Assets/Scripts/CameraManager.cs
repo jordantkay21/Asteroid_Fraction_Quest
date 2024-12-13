@@ -108,5 +108,16 @@ namespace KayosStudios.AsteroidQuest
             camera.Follow = container;
         }
 
+        public Vector2 GetFrustumSizeAtDepth(float depth)
+        {
+            Camera mainCamera = Camera.main;
+            if (mainCamera == null) return Vector2.zero;
+
+            float frustumHeight = 2.0f * depth * Mathf.Tan(mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+            float frustumWidth = frustumHeight * mainCamera.aspect;
+
+            return new Vector2(frustumWidth, frustumHeight);
+        }
+
     }
 }

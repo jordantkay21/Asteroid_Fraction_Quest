@@ -197,6 +197,9 @@ namespace KayosStudios.AsteroidQuest.AsteroidManagement
                 StartCoroutine(MoveOrbToPosition(_spawnedOrbs[i].gameObject, targetPosition, moveDuration));
             }
 
+            orbContainer.position = new Vector3(0, 0, Camera.main.transform.position.z + 10);
+            GameManager.Instance.ConstrainOrbsToFOV(orbContainer);
+
             GameManager.Instance.cameraManager.FocusOnOrbs(orbContainer);
         }
 
